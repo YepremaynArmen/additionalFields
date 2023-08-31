@@ -1,0 +1,113 @@
+Настройка ssh без пароля
+ssh-copy-id -i ~/.ssh/id_rsa.pub t126@10.4.0.30
+------------------
+Установка tomcat возможно она не нужна
+cd /tmp
+wget https://downloads.apache.org/tomcat/tomcat-8/v8.5.85/bin/apache-tomcat-8.5.85.tar.gz
+mkdir ~/opt/tomcat
+t126@eljur:/tmp$ tar -xvf apache-tomcat-8.5.85.tar.gz -C ~/opt/tomcat --strip-components=1
+sh -c 'chmod +x /opt/tomcat/bin/*.sh'
+-------------------------
+создаем директорию проекта
+
+~/IdeaProjects/LessonsProj> chmod +x scripts/deploy-prod.sh
+Для deploy используем файл ~/IdeaProjects/LessonsProj> scripts/deploy-prod.sh
+
+
+deploy https://www.youtube.com/watch?v=wj7j92w2eLw
+https://medium.com/@tough_jonquil_dog_815/jar-%D1%84%D0%B0%D0%B9%D0%BB-%D0%BA%D0%B0%D0%BA-%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B0-ubuntu-ab9557d58f2f
+Не хватило прав на создание сервиса, чтобы запускать jar file
+Файл создан d temp/ElJur.service
+
+Список процессов запущенных на java
+ps aux | grep java
+
+Убить процесс
+pgrep java | xargs kill -9
+
+
+----------- Убиваем соединения
+SELECT * FROM pg_stat_activity;
+
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'ELJur-prod' -- ← change this to your DB
+  AND pid <> pg_backend_pid();
+
+А лучше так
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE datname = current_database()
+  AND pid <> pg_backend_pid();
+
+
+  keytool -genkey -alias tomcat -storetype PKCS12 -keyalg RSA -keysize 2028 -keystore keystore.p12 -validity 3650
+  admin1234
+
+
+java -jar /home/t126/projects/ElJur/LessonsProj-1.0-SNAPSHOT.jar &
+
+java -jar /home/t126/projects/ElJur/EljurInterface-1.0-SNAPSHOT.jar &
+
+
+https://www.youtube.com/watch?v=OvNcFkkTZg4
+https://doc.opensuse.org/documentation/leap/security/html/book-security/cha-security-ldap.html#sec-security-ldap-server-install
+https://directory.fedoraproject.org/docs/389ds/howto/howto-users-and-groups.html
+sudo dsctl localhost remove --do-it
+sudo dscreate from-file MyLdap.txt
+sudo dsctl localhost status
+sudo systemctl status dirsrv@localhost.service  или systemctl status --no-pager --full dirsrv@localhost.service
+
+ss -ntl -- порт ldap 636
+openssl s_client -connect localhost:636
+ldapsearch -H ldap://localhost -D "cn=t126" -W -b "dc=example,dc=com"  или LDAPTLS_REQCERT=never ldapsearch -H ldap://localhost -D "cn=t126" -W -b "dc=example,dc=com"
+
+другие команды sudo dsidm localhost -b t1261 user list
+
+[localhost]
+# Note that '/' is replaced to '%%2f'.
+uri = ldapi://%%2fvar%%2frun%%2fslapd-localhost.socket
+basedn = dc=example,dc=com
+binddn = cn=Directory Manager
+
+
+
+ldapmodify -D "cn=t126" -W
+dn: cn=config
+changetype: modify
+replace: nsslapd-ldapilisten
+nsslapd-ldapilisten: on
+-
+replace: nsslapd-ldapifilepath
+nsslapd-ldapifilepath: /var/run/slapd-localhost.socket
+-
+replace: nsslapd-ldapiautobind
+nsslapd-ldapiautobind: on
+-
+replace: nsslapd-ldapimaprootdn
+nsslapd-ldapimaprootdn: cn=t126
+
+<press enter twice to send this modification operation>
+
+# dsctl <instance> restart
+
+
+dsconf localhost plugin memberof status
+Plugin 'MemberOf Plugin' is disabled
+dsconf localhost plugin memberof enable
+sudo dsctl localhost restart
+sudo dsconf localhost plugin memberof set --scope dc=example,dc=com
+sudo dsconf localhost plugin memberof fixup dc=example,dc=com
+
+https://www.youtube.com/watch?v=-wDUChgvYgU
+
+Copy files via ssh
+scp /home/t126/IT_COLLEGE/СУБД/Base/betons_prod.csv t126@10.4.0.185:/home/t126/
+scp /home/t126/IT_COLLEGE/СУБД/Base/betons.csv t126@10.4.0.185:/home/t126/
+
+
+
+npm install
+npm run build
+npm start
+

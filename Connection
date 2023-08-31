@@ -1,0 +1,5 @@
+--select * from public.customer_import
+
+SELECT 
+   doc
+FROM public.customer_import;
